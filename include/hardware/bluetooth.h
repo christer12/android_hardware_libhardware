@@ -408,6 +408,16 @@ typedef void (*le_test_mode_callback)(bt_status_t status, uint16_t num_packets);
  * Energy used-Value as returned by the controller
  * Status-Provides the status of the read_energy_info API call */
 typedef void (*energy_info_callback)(bt_activity_energy_info *energy_info);
+=======
+/** Bluetooth Vendor Specific Command Complete Callback */
+/* This callback is invoked whenever a command complete message is received for a message initially sent
+   using vendor_specific_command */
+typedef void (*vendor_specific_command_complete_callback)(uint16_t opcode, uint8_t *buf, uint8_t len);
+
+/** Vendor specific event callback */
+/* This callback is invoked whenever a vendor specific event is received from the controller. Reception
+   of such events must first be enabled through the function enable_vendor_specific_events */
+typedef void (*vendor_specific_event_callback)(uint8_t *buf, uint8_t len);
 
 /** TODO: Add callbacks for Link Up/Down and other generic
   *  notifications/callbacks */
@@ -433,6 +443,8 @@ typedef struct {
     le_lpp_read_rssi_thresh_callback           le_lpp_read_rssi_thresh_cb;
     le_lpp_enable_rssi_monitor_callback        le_lpp_enable_rssi_monitor_cb;
     le_lpp_rssi_threshold_evt_callback         le_lpp_rssi_threshold_evt_cb;
+    vendor_specific_command_complete_callback vendor_specific_command_complete_cb;
+    vendor_specific_event_callback vendor_specific_event_cb;
 } bt_callbacks_t;
 
 typedef void (*alarm_cb)(void *data);
@@ -594,6 +606,12 @@ typedef struct {
     bt_status_t (*le_lpp_enable_rssi_monitor)(const bt_bdaddr_t *remote_bda, int enable);
     bt_status_t (*le_lpp_read_rssi_threshold)(const bt_bdaddr_t *remote_bda);
 
+    /** Vendor Specific HCI interface APIs */
+    /* Send any vendor-specific HCI command to the controller. */
+    int (*vendor_specific_command)(uint16_t opcode, uint8_t *buf, uint8_t len);
+
+    /* Disable/enable receiving callbacks for vendor specific events from the controller. */
+    int (*enable_vendor_specific_events)(uint8_t enable);
 } bt_interface_t;
 
 /** TODO: Need to add APIs for Service Discovery, Service authorization and
